@@ -6,11 +6,18 @@ import org.apache.flink.util.Collector
 import java.time.OffsetDateTime
 import java.util.regex.Pattern
 
+/**
+ * Transformiert einen String nach SyslogEntry
+ */
 class SyslogParser : ProcessFunction<String, SyslogEntry>() {
     // https://datatracker.ietf.org/doc/html/rfc5424#section-6
     // Der Syslog Faker fügt die Source IP hinzu ({IP}|{Syslog-Message}). In einer realen Anwendung ist dies die IP-Adresse des Syslog-Senders.
-    private var rfc5424Regex: Pattern =
+    private val rfc5424Regex =
         Pattern.compile("^(\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3})\\|<(\\d{1,3})>1 (\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z) ([_\\w-]+) ([_\\w-]+) ([_\\w-]+) ([_\\w-]+) ([_\\w-]+)")
+
+    private val structureDataRegex =
+        Pattern.compile("((?<key>\\w+)=(\"(?<str>[\\d\\w\\-_ .:]+)\"|(?<str2>[\\d.:]+)))")
+
 
     override fun processElement(value: String?, ctx: Context?, collector: Collector<SyslogEntry>?) {
 
@@ -25,8 +32,6 @@ class SyslogParser : ProcessFunction<String, SyslogEntry>() {
     }
 
     private fun GetSylogEntry(message: String): SyslogEntry? {
-        val properties: HashMap<String, Any> = HashMap()
-        properties["tag"] = "Tag"
 
         // Mather erstellen
         val matcher = rfc5424Regex.matcher(message)
@@ -83,11 +88,14 @@ class SyslogParser : ProcessFunction<String, SyslogEntry>() {
             23 -> facility = "Local7"
         }
 
+        // +1 => Erste Leerzeichen entfernen
+        val patternEnd = matcher.end() + 1
+
         return SyslogEntry(
             matcher.group(1),
             facility!!,
             severity!!,
-            properties,
+            ExtractProperties(message, patternEnd),
             message,
             OffsetDateTime.parse(matcher.group(3)),
             matcher.group(4),
@@ -95,5 +103,38 @@ class SyslogParser : ProcessFunction<String, SyslogEntry>() {
             matcher.group(6),
             matcher.group(7)
         )
+    }
+
+    private fun ExtractProperties(message: String, patternEnd: Int): HashMap<String, Any> {
+        val properties: HashMap<String, Any> = HashMap()
+
+
+        val structureData = message.substring(patternEnd)
+
+        val matcher = structureDataRegex.matcher(structureData)
+
+        // Jedes Key Value extrahieren
+        while (matcher.find()) {
+            val key = matcher.group("key")
+            var value = matcher.group("str")
+
+            if (value != null) {
+                properties[key] = value
+                continue
+            }
+
+            value = matcher.group("str2")
+
+            // Bei der RegEx Gruppe kann es sich um eine Zahl handeln
+            val numberValue = value.toDoubleOrNull()
+
+            if (numberValue != null) {
+                properties[key] = numberValue
+            } else {
+                properties[key] = value
+            }
+        }
+
+        return properties
     }
 }

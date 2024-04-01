@@ -9,7 +9,7 @@ namespace SyslogFaker;
 /// <summary>
 /// Erzeugt Fake Syslog Einträge und sendet diese zu Kafka
 /// </summary>
-public class SyslogFaker : IDisposable
+public sealed class SyslogFaker : IDisposable
 {
     private readonly CancellationToken _cancellationToken;
     private readonly KafkaSettings _kafkaSettings;
@@ -125,18 +125,23 @@ public class SyslogFaker : IDisposable
     /// <returns></returns>
     private string GenerateRandomSyslog()
     {
-        string sourceIp = $"{_random.Next(1, 255)}.{_random.Next(0, 255)}.{_random.Next(0, 255)}.{_random.Next(0, 255)}";
+        string sourceIp = GenerateIp();
         int pri = (_random.Next(23) << 3) | _random.Next(7);
-        string srcIp = $"{_random.Next(1, 255)}.{_random.Next(0, 255)}.{_random.Next(0, 255)}.{_random.Next(0, 255)}";
-        string dstIp = $"{_random.Next(1, 255)}.{_random.Next(0, 255)}.{_random.Next(0, 255)}.{_random.Next(0, 255)}";
-        int srcPort = _random.Next(1, 65535);
-        int dstPort = _random.Next(1, 65535);
+        string srcIp = GenerateIp();
+        string dstIp = GenerateIp();
+        int srcPort = _random.Next(1024, 65535);
+        int dstPort = _random.Next(1, 1024);
         string action = _random.Next(0, 1) == 1 ? "Allowed" : "Denied";
 
         return $"{sourceIp}|<{pri}>1 {DateTimeOffset.UtcNow:yyyy-MM-ddTHH:mm:ssZ} Server-001 SyslogFaker - - - eventtime={DateTimeOffset.Now.ToUnixTimeMilliseconds()} logid=\"0000000020\" type=\"traffic\" subtype=\"forward\" level=\"notice\" srcip={srcIp} srcport={srcPort} dstIp={dstIp} dstPort={dstPort} action=\"{action}\"";
     }
 
-    protected virtual void Dispose(bool disposing)
+    private string GenerateIp()
+    {
+        return $"192.168.2.{_random.Next(2, 255)}";
+    }
+
+    private void Dispose(bool disposing)
     {
         if (!disposedValue)
         {

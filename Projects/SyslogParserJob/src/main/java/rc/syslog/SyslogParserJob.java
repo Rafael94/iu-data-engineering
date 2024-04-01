@@ -26,11 +26,17 @@ import java.util.Objects;
  * Job für das Streaming Progressing
  */
 public class SyslogParserJob {
-    public static void main(String[] args) throws Exception {
-        ParameterTool parameters = ParameterTool.fromArgs(args);
+    private static String IndexName = "syslog";
 
+    public static void main(String[] args) throws Exception {
+
+        // Parameter auslesen und überprüfen
+        ParameterTool parameters = ParameterTool.fromArgs(args);
         CheckParameters(parameters);
 
+        IndexName = parameters.get("index", IndexName);
+
+        // Apache Flink Konfigurationen setzen
         Configuration config = new Configuration();
         config.set(RestartStrategyOptions.RESTART_STRATEGY, "fixed-delay");
         config.set(RestartStrategyOptions.RESTART_STRATEGY_FIXED_DELAY_ATTEMPTS, 3); // number of restart attempts
@@ -38,6 +44,7 @@ public class SyslogParserJob {
 
         final StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment(config);
 
+        // Apache Kafka Konfigurationen
         KafkaSource<String> source = KafkaSource.<String>builder()
                 .setBootstrapServers(parameters.get("kafka-bootstrap-servers"))
                 .setTopics("syslog")
@@ -47,12 +54,14 @@ public class SyslogParserJob {
                 .setValueOnlyDeserializer(new SimpleStringSchema())
                 .build();
 
+        // Transformationen setzen
         SingleOutputStreamOperator<SyslogEntry> syslogMessages = env
                 .fromSource(source, WatermarkStrategy.noWatermarks(), "Kafka Source")
                 .name("syslog-messages")
                 .process(new SyslogParser())
                 .name("SyslogEntry");
 
+        // ElasticSearch Konfigurationen
         String[] elasticSearchServers = parameters.get("elasticsearch").split(",");
 
         List<HttpHost> elasticSearchHosts = new ArrayList<HttpHost>();
@@ -68,8 +77,6 @@ public class SyslogParserJob {
 
         syslogMessages.sinkTo(
                         new Elasticsearch7SinkBuilder<SyslogEntry>()
-                                //.setBulkFlushMaxActions(1) // Instructs the sink to emit after every element, otherwise they would be buffered
-                                //.setHosts(new HttpHost("elasticsearch1", 9200, "http"))
                                 .setHosts(elasticSearchHosts.toArray(HttpHost[]::new))
                                 .setEmitter(
                                         (element, context, indexer) ->
@@ -80,7 +87,8 @@ public class SyslogParserJob {
                                 .build())
                 .name("ElasticSearch indexieren");
 
-        env.execute("Fraud Detection");
+        // Ausführen
+        env.execute("Syslog Parser");
     }
 
     /**
@@ -104,10 +112,17 @@ public class SyslogParserJob {
         json.put("timestamp", element.getTimestamp());
 
         return Requests.indexRequest()
-                .index(String.format(String.format("syslog-" + LocalDate.now().toString("yyyy-MM-dd"))))
+                // Aktuelles Datum setzen
+                .index(String.format(String.format(IndexName + '-' + LocalDate.now().toString("yyyy-MM-dd"))))
                 .source(json);
     }
 
+    /**
+     * Überprüft die übergebene Parameter
+     *
+     * @param parameters
+     * @throws Exception
+     */
     private static void CheckParameters(ParameterTool parameters) throws Exception {
         String parameter = parameters.get("kafka-bootstrap-servers", "");
 
