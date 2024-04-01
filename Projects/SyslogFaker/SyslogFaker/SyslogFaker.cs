@@ -1,6 +1,4 @@
-﻿using System;
-
-using Confluent.Kafka;
+﻿using Confluent.Kafka;
 
 using Microsoft.Extensions.Logging;
 
@@ -9,7 +7,7 @@ namespace SyslogFaker;
 /// <summary>
 /// Erzeugt Fake Syslog Einträge und sendet diese zu Kafka
 /// </summary>
-public sealed class SyslogFaker : IDisposable
+public sealed partial class SyslogFaker : IDisposable
 {
     private readonly CancellationToken _cancellationToken;
     private readonly KafkaSettings _kafkaSettings;
@@ -26,6 +24,9 @@ public sealed class SyslogFaker : IDisposable
     {
         _cancellationToken = cancellationToken;
         _kafkaSettings = kafkaSettings;
+        _logger = logger;
+
+        LogCreateProducerConfig(logger);
 
         ProducerConfig config = new()
         {
@@ -38,11 +39,11 @@ public sealed class SyslogFaker : IDisposable
             AllowAutoCreateTopics = true,
         };
 
+        LogCreateProducer(logger);
+
         _producer = new ProducerBuilder<Null, string>(config)
             .SetLogHandler(LogMassge)
             .Build();
-
-        _logger = logger;
     }
 
     /// <summary>
@@ -69,11 +70,11 @@ public sealed class SyslogFaker : IDisposable
             try
             {
                 // Zufällige Nachricht erzeugen
-                var syslogMessage = GenerateRandomSyslog();
+                string syslogMessage = GenerateRandomSyslog();
 
                 _producer.Produce(_kafkaSettings.Topic, new Message<Null, string> { Value = syslogMessage }, Handler);
 
-                if(_kafkaSettings.WaitingTimeBetweenMessages.HasValue)
+                if (_kafkaSettings.WaitingTimeBetweenMessages.HasValue)
                 {
                     await Task.Delay(_kafkaSettings.WaitingTimeBetweenMessages.Value);
                 }
@@ -102,7 +103,7 @@ public sealed class SyslogFaker : IDisposable
     {
         if (report.Error.IsError)
         {
-            _logger.LogError(report.Error.ToString());
+            LogError(_logger, report.Error.ToString());
         }
     }
 
@@ -115,7 +116,7 @@ public sealed class SyslogFaker : IDisposable
     {
         if (message.Level == SyslogLevel.Error)
         {
-            _logger.LogError(message.Message);
+            LogError(_logger, message.Message);
         }
     }
 
@@ -159,4 +160,13 @@ public sealed class SyslogFaker : IDisposable
         Dispose(disposing: true);
         GC.SuppressFinalize(this);
     }
+
+    [LoggerMessage(LogLevel.Information, "ProducerConfig wird erstellt")]
+    private static partial void LogCreateProducerConfig(ILogger logger);
+
+    [LoggerMessage(LogLevel.Information, "Producer wird erstellt")]
+    private static partial void LogCreateProducer(ILogger logger);
+
+    [LoggerMessage(LogLevel.Error, "Syslog Faker Nachrichtenversand. {message}")]
+    private static partial void LogError(ILogger logger, string message);
 }

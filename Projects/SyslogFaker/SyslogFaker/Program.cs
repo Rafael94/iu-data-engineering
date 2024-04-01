@@ -40,8 +40,12 @@ IConfigurationRoot config = new ConfigurationBuilder()
     .AddEnvironmentVariables()
     .Build();
 
+// Konfigurationsobjekt erstellen
+logger.LogInformation("Appsettings wurden geladen");
+
 #endregion
 
+logger.LogInformation("KafkaSettings werden geprüft");
 KafkaSettings kafkaSettings = config.GetSection("Kafka").Get<KafkaSettings>() ?? throw new Exception("Kafka Einstellungen konnten nicht geladen werden.");
 
 if (string.IsNullOrEmpty(kafkaSettings.BootstrapServers))
@@ -50,6 +54,7 @@ if (string.IsNullOrEmpty(kafkaSettings.BootstrapServers))
     throw new Exception("Kafka:BootstrapServers in appsettings.json ist erforderlich");
 }
 
+logger.LogInformation("Syslog Faker wird erstellt");
 SyslogFaker.SyslogFaker syslogFaker = new(kafkaSettings, logger, cts.Token);
 
 logger.LogInformation("Syslog Nachrichten werden gesendet");
