@@ -8,6 +8,7 @@
 		<PublishAot>true</PublishAot>
 		<EnableConfigurationBindingGenerator>true</EnableConfigurationBindingGenerator>
 		<PublishTrimmed>true</PublishTrimmed>
+		<InvariantGlobalization>true</InvariantGlobalization>
 	</PropertyGroup>
 
 	<ItemGroup>

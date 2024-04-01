@@ -1,0 +1,4 @@
+src/SyslogFaker/bin
+src/SyslogFaker/obj
+src/Kafka/Confluent.Kafka/bin
+src/Kafka/Confluent.Kafka/obj

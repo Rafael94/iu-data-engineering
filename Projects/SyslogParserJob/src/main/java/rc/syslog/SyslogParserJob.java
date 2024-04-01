@@ -78,6 +78,8 @@ public class SyslogParserJob {
         syslogMessages.sinkTo(
                         new Elasticsearch7SinkBuilder<SyslogEntry>()
                                 .setHosts(elasticSearchHosts.toArray(HttpHost[]::new))
+                                .setConnectionUsername(parameters.get("elasticsearch-user"))
+                                .setConnectionPassword(parameters.get("elasticsearch-password"))
                                 .setEmitter(
                                         (element, context, indexer) ->
                                                 indexer.add(createIndexRequest(element)))
@@ -134,6 +136,18 @@ public class SyslogParserJob {
 
         if (Objects.equals(parameter, "")) {
             throw new Exception("Parameter --elasticsearch fehlt");
+        }
+
+        parameter = parameters.get("elasticsearch-password");
+
+        if (Objects.equals(parameter, "")) {
+            throw new Exception("Parameter --elasticsearch-password fehlt");
+        }
+
+        parameter = parameters.get("elasticsearch-user");
+
+        if (Objects.equals(parameter, "")) {
+            throw new Exception("Parameter --elasticsearch-user fehlt");
         }
     }
 }
