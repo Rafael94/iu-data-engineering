@@ -12,10 +12,16 @@ cd ../..
 
 
 # Syslog Faker
+if((Test-Path -Path "DockerFiles/SyslogFaker") -eq $false) {
+    Write-Host "Syslog Fake Ordner wird erstellt"
+
+    New-Item -Path "DockerFiles/" -Name "SyslogFaker" -ItemType Directory
+}
+
 if((Test-Path -Path "DockerFiles/SyslogFaker/appsettings.json") -eq $false) {
     Write-Host "Syslog Fake appsettings.json wird erstellt"
 
-    New-Item -Path "DockerFiles/SyslogFaker/" -Name "appsettings.json" -ItemType "file" -Value '{
+    New-Item -Path "DockerFiles/SyslogFaker/" -Name "appsettings.json" -ItemType File -Value '{
   "Kafka": {
     "BootstrapServers": "kafka1:29092,kafka2:29092,kafka3:29092",
     "WaitingTimeBetweenMessages": 10,
@@ -44,12 +50,12 @@ if((Test-Path  -Path "DockerFiles/Kafka/Kafka1") -eq $false) {
 }
 
 if((Test-Path  -Path "DockerFiles/Kafka/Kafka2") -eq $false) {
-    Write-Host "Kafka1 Ordner wird erstellt"
+    Write-Host "Kafka2 Ordner wird erstellt"
     New-Item "DockerFiles/Kafka/Kafka2" -ItemType Directory
 }
 
 if((Test-Path  -Path "DockerFiles/Kafka/Kafka3") -eq $false) {
-    Write-Host "Kafka1 Ordner wird erstellt"
+    Write-Host "Kafka3 Ordner wird erstellt"
     New-Item "DockerFiles/Kafka/Kafka3" -ItemType Directory
 }
 
