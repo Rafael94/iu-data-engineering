@@ -270,7 +270,7 @@ Dort wird ein neues Template erstellt und konfiguriert. Der Name kann frei gewä
 
 Im Menüpunkt `Index Lifecycle Policies` können Richtlinien verwaltet werden.
 
-![Index-Lebenszyklus-Richtlinien](https://github.com/Rafael94/iu-data-engineering/blob/main/Images/ElasticSearch/Index-Lebenszyklus-Richtlinien.png)
+![Index-Lebenszyklus-Richtlinien](https://github.com/Rafael94/iu-data-engineering/blob/main/Images/ElasticSearch/Index-Lifecycle-Policies.png?raw=true)
 
 Zum Beispiel können alte Daten nach 7 Tagen gelöscht werden. Dazu kann die Policy `7-days-default` verwendet werden. Auf der rechten Seite des Datensatzes befindet sich ein `Plus`. Nach dem Anklicken erscheint ein Dialog. Hier kann das zuvor erstellte `Index Template` hinterlegt werden.
 
