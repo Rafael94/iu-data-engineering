@@ -26,7 +26,7 @@
 
 # Vorwort
 
-![Übersicht](files/Infrastruktur.png)
+![Übersicht](./files/Infrastruktur.png)
 
 Dieses Projekt wurde im Rahmen einer Projektarbeit an der IU entwickelt.
 
@@ -44,7 +44,7 @@ Eine Beispiel-Meldung könnte wie folgt aussehen: `192.168.2.150|<52>1 2024-04-0
 
 Im produktiven Einsatz würden die Meldungen über UDP oder TCP empfangen und dann an Kafka weitergeleitet. Durch einen vorgeschalteten Load-Balancer könnte die Skalierbarkeit des Syslog-Empfängers verbessert und die Ausfallsicherheit erhöht werden, falls ein Syslog-Empfänger ausfällt.
 
-In der `appsettings.json`, die nach Ausführung des PowerShell-Skripts `init.ps1` im Verzeichnis `DockerFiles/SyslogFaker` erstellt wird, kann die Wartezeit (`WaitingTimeBetweenMessages`) zwischen zwei Meldungen geändert werden. Standardmäßig wird eine Wartezeit von 10 Millisekunden eingestellt.
+In der `appsettings.json`, die nach Ausführung des PowerShell-Skripts `init.ps1` im Verzeichnis `Docker./files/SyslogFaker` erstellt wird, kann die Wartezeit (`WaitingTimeBetweenMessages`) zwischen zwei Meldungen geändert werden. Standardmäßig wird eine Wartezeit von 10 Millisekunden eingestellt.
 
 Der Quellcode befindet sich im Verzeichnis `Projects/SyslogFaker` und kann mit Visual Studio geöffnet werden. Zur Ausführung des Programms wird das [.NET 8 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/8.0) benötigt. Eine manuelle Kompilierung des Projekts ist erforderlich, sodass die genannten Abhängigkeiten nicht installiert werden müssen. Das Programm wird in einem Docker-Container kompiliert und als Image im lokalen Repository gespeichert.
 
@@ -225,7 +225,7 @@ Zuletzt startet das Skript die Docker Container mit `docker compose up`. Es kann
 
 Der Syslog Parser wird in Apache Flink ausgeführt und befindet sich als `syslog.jar` Datei im Ordner `Projects\SyslogParserJob\out\artifacts`. Die Jar-Datei muss in [Apache Flink](http://localhost:8080#/submit) hochgeladen werden.
 
-![Apache Flink Job Submit](files/apache-flink-job-submit.png)
+![Apache Flink Job Submit](./files/apache-flink-job-submit.png)
 
 Vor der Ausführung müssen einige Parameter angegeben werden.
 
@@ -250,27 +250,27 @@ Die Debug-Parameter werden für die Ausführung in der IDE verwendet. Wo diese g
 
 Beim ersten Aufruf von [Kibana Discover](http://localhost:5601/app/discover#/) muss ein `Index Pattern` angegeben werden.
 
-Index-Pattern](files/ElasticSearch/Index-Pattern.png)
+Index-Pattern](./files/ElasticSearch/Index-Pattern.png)
 
 Die Daten aus dem Syslog Parser werden standardmäßig unter dem Index `syslog-{yyyy-MM-dd}` gespeichert. Daher geben wir als Namen `syslog*` und als Zeitstempel `timestamp` an.
 
 Anschließend können die aufbereiteten Meldungen ausgewertet werden.
 
-![Discover](files/ElasticSearch/Discover.png)
+![Discover](./files/ElasticSearch/Discover.png)
 
 ### Automatisches löschen
 
 Die automatische Löschung wird über die [Kibana Ui](http://localhost:5601) konfiguriert. Dort muss zunächst zum [Index Management](http://localhost:5601/app/management/data/index_management/indices) navigiert werden. Anschließend muss der Reiter `Index Templates` ausgewählt werden.
 
-Index Templates](files/ElasticSearch/Index-Template.png)
+Index Templates](./files/ElasticSearch/Index-Template.png)
 
 Dort wird ein neues Template erstellt und konfiguriert. Der Name kann frei gewählt werden. Wie im vorherigen Kapitel erwähnt, werden die Templates standardmäßig unter dem Index `syslog-{yyyy-MM-dd}` gespeichert, daher muss im Feld "Index Pattern" der String `syslog*` eingetragen werden. Danach kann das Template gespeichert werden.
 
-Index-Vorlage erstellen](files/ElasticSearch/Create-Index-Template.png)
+Index-Vorlage erstellen](./files/ElasticSearch/Create-Index-Template.png)
 
 Im Menüpunkt `Index Lifecycle Policies` können Richtlinien verwaltet werden.
 
-Index-Lebenszyklus-Richtlinien](files/ElasticSearch/Index-Lebenszyklus-Richtlinien.png)
+Index-Lebenszyklus-Richtlinien](./files/ElasticSearch/Index-Lebenszyklus-Richtlinien.png)
 
 Zum Beispiel können alte Daten nach 7 Tagen gelöscht werden. Dazu kann die Policy `7-days-default` verwendet werden. Auf der rechten Seite des Datensatzes befindet sich ein `Plus`. Nach dem Anklicken erscheint ein Dialog. Hier kann das zuvor erstellte `Index Template` hinterlegt werden.
 
