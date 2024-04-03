@@ -223,7 +223,7 @@ Zuletzt startet das Skript die Docker Container mit `docker compose up`. Es kann
 
 ## Syslog Parser Job
 
-Der Syslog Parser wird in Apache Flink ausgeführt und befindet sich als `syslog.jar` Datei im Ordner `Projects\SyslogParserJob\out\artifacts`. Die Jar-Datei muss in [Apache Flink](http://localhost:8080#/submit) hochgeladen werden.
+Der Syslog Parser wird in Apache Flink ausgeführt und befindet sich als `syslog.jar` Datei im Ordner `Projects/SyslogParserJob/out/artifacts/syslog_jar`. Die Jar-Datei muss in [Apache Flink](http://localhost:8080#/submit) hochgeladen werden.
 
 ![Apache Flink Job Submit](https://github.com/Rafael94/iu-data-engineering/blob/main/Images/apache-flink-job-submit.png)
 

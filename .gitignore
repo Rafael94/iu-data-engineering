@@ -3,6 +3,7 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/main/VisualStudio.gitignore
 
+
 # User-specific files
 *.rsuser
 *.suo
@@ -60,7 +61,10 @@ BenchmarkDotNet.Artifacts/
 # .NET Core
 project.lock.json
 project.fragment.lock.json
+
+
 artifacts/
+
 
 # ASP.NET Scaffolding
 ScaffoldingReadMe.txt
@@ -400,3 +404,6 @@ FodyWeavers.xsd
 .idea
 
 DockerFiles/
+
+!Projects/SyslogParserJob/out/artifacts/
+Projects/SyslogParserJob/out/artifacts/syslog_jar/syslog
