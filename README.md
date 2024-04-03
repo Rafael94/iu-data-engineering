@@ -250,7 +250,7 @@ Die Debug-Parameter werden für die Ausführung in der IDE verwendet. Wo diese g
 
 Beim ersten Aufruf von [Kibana Discover](http://localhost:5601/app/discover#/) muss ein `Index Pattern` angegeben werden.
 
-[Index-Pattern](https://github.com/Rafael94/iu-data-engineering/blob/main/Images/ElasticSearch/Index-Pattern.png)
+![Index-Pattern](https://github.com/Rafael94/iu-data-engineering/blob/main/Images/ElasticSearch/Index-Pattern.png)
 
 Die Daten aus dem Syslog Parser werden standardmäßig unter dem Index `syslog-{yyyy-MM-dd}` gespeichert. Daher geben wir als Namen `syslog*` und als Zeitstempel `timestamp` an.
 
@@ -262,15 +262,15 @@ Anschließend können die aufbereiteten Meldungen ausgewertet werden.
 
 Die automatische Löschung wird über die [Kibana Ui](http://localhost:5601) konfiguriert. Dort muss zunächst zum [Index Management](http://localhost:5601/app/management/data/index_management/indices) navigiert werden. Anschließend muss der Reiter `Index Templates` ausgewählt werden.
 
-[Index Templates](https://github.com/Rafael94/iu-data-engineering/blob/main/Images/ElasticSearch/Index-Template.png)
+![Index Templates](https://github.com/Rafael94/iu-data-engineering/blob/main/Images/ElasticSearch/Index-Template.png)
 
 Dort wird ein neues Template erstellt und konfiguriert. Der Name kann frei gewählt werden. Wie im vorherigen Kapitel erwähnt, werden die Templates standardmäßig unter dem Index `syslog-{yyyy-MM-dd}` gespeichert, daher muss im Feld "Index Pattern" der String `syslog*` eingetragen werden. Danach kann das Template gespeichert werden.
 
-[Index-Vorlage erstellen](https://github.com/Rafael94/iu-data-engineering/blob/main/Images/ElasticSearch/Create-Index-Template.png)
+![Index-Vorlage erstellen](https://github.com/Rafael94/iu-data-engineering/blob/main/Images/ElasticSearch/Create-Index-Template.png)
 
 Im Menüpunkt `Index Lifecycle Policies` können Richtlinien verwaltet werden.
 
-[Index-Lebenszyklus-Richtlinien](https://github.com/Rafael94/iu-data-engineering/blob/main/Images/ElasticSearch/Index-Lebenszyklus-Richtlinien.png)
+![Index-Lebenszyklus-Richtlinien](https://github.com/Rafael94/iu-data-engineering/blob/main/Images/ElasticSearch/Index-Lebenszyklus-Richtlinien.png)
 
 Zum Beispiel können alte Daten nach 7 Tagen gelöscht werden. Dazu kann die Policy `7-days-default` verwendet werden. Auf der rechten Seite des Datensatzes befindet sich ein `Plus`. Nach dem Anklicken erscheint ein Dialog. Hier kann das zuvor erstellte `Index Template` hinterlegt werden.
 
