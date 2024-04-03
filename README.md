@@ -279,6 +279,8 @@ Zum Beispiel können alte Daten nach 7 Tagen gelöscht werden. Dazu kann die Pol
 Das Projekt enthält fest codierte Login-Daten und Passwörter, die ausschließlich Demonstrationszwecken dienen und die Reproduzierbarkeit erleichtern sollen. Es wird ausdrücklich darauf hingewiesen, dass diese Daten nicht in einer produktiven Umgebung verwendet werden dürfen.
 ## Apache Flink
 
+Die Zugangsdaten sind in der Datei `htpasswd` im Verzeichnis `DockerFiles/Nginx` hinterlegt.
+
 Url: [Apache Flink Ui](http://localhost:8080)
 
 Username: `iu`
@@ -286,6 +288,8 @@ Username: `iu`
 Password: `iu`
 
 ## Kibana
+
+Die Zugangsdaten für ElasticSearch sind direkt im Docker-Compose hinterlegt.
 
 Url: [Kibana Ui](http://localhost:5601)
 
