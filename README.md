@@ -1,4 +1,5 @@
 - [Vorwort](#vorwort)
+    * [Stream- vs Batchprocessing](#stream--vs-batchprocessing)
     * [Syslog Faker](#syslog-faker)
         + [Kafka Client (C#)](#kafka-client--c--)
     * [Apache Kafka](#apache-kafka)
@@ -23,6 +24,8 @@
         + [Auslesen der zusätzlichen Daten](#auslesen-der-zus-tzlichen-daten)
         + [Parsen optimieren](#parsen-optimieren)
         + [Daten minimieren](#daten-minimieren)
+- [Abschließende Anmerkung](#abschließende-anmerkung)
+
 
 # Vorwort
 
@@ -35,6 +38,13 @@ Das Hauptziel dieser Projektarbeit besteht darin, Syslog-Meldungen zu verarbeite
 Im Rahmen dieser Projektarbeit wird ein Syslog-Producer entwickelt, der kontinuierlich Syslog-Meldungen versendet. Diese Meldungen werden an einen Kafka-Cluster übermittelt, der ausschließlich als Message Broker fungiert. Zur Verarbeitung der Syslog-Meldungen wird Apache Flink eingesetzt. Eine Java-Applikation, die auf Apache Flink läuft, extrahiert die Meldungen aus Kafka und bereitet sie auf, indem sie den String analysiert und in seine Bestandteile zerlegt. Diese Bestandteile umfassen feste Informationen wie Hostname und AppName sowie variable Komponenten, die von der jeweiligen Anwendung abhängen. Die aufbereiteten Meldungen werden anschließend in einem ElasticSearch-Cluster gespeichert, wo sie für weitere Auswertungen zur Verfügung stehen. Kibana dient als Schnittstelle zu ElasticSearch, um die Meldungen zu visualisieren und zu analysieren.
 
 Die Anwendungen werden in Docker-Containern ausgeführt und mittels Docker-Compose konfiguriert. Da Apache Flink keine integrierte Authentifizierung für das Interface bietet, wird Nginx als Reverse Proxy eingesetzt, um die Authentifizierung zu übernehmen.
+
+## Stream- vs Batchprocessing
+
+Für die Verarbeitung von Syslog-Meldungen ist Streamprocessing am besten geeignet. Beim Streamprocessing werden die Daten kontinuierlich verarbeitet, während beim Batchprocessing die Verarbeitung nur zu bestimmten Zeitpunkten erfolgt.
+Eine Echtzeitverarbeitung der Syslog-Meldungen ermöglicht eine schnellere Reaktion auf Anomalien. Beispielsweise können bei einem DDOS-Angriff schneller Abwehrmaßnahmen ergriffen werden.
+
+Außerdem vereinfacht eine Echtzeitverarbeitung die Problembehandlung und das Warten auf die nächste Batchverarbeitung entfällt. Für den Fall, dass eine Anwendung bestimmte Server nicht mehr erreichen kann, ist eine direkte Auswertung der Syslog-Meldungen möglich. Fortinet sendet blockierte Requests über Syslog.
 
 ## Syslog Faker
 
@@ -277,6 +287,7 @@ Zum Beispiel können alte Daten nach 7 Tagen gelöscht werden. Dazu kann die Pol
 # Anmeldedaten
 
 Das Projekt enthält fest codierte Login-Daten und Passwörter, die ausschließlich Demonstrationszwecken dienen und die Reproduzierbarkeit erleichtern sollen. Es wird ausdrücklich darauf hingewiesen, dass diese Daten nicht in einer produktiven Umgebung verwendet werden dürfen.
+
 ## Apache Flink
 
 Die Zugangsdaten sind in der Datei `htpasswd` im Verzeichnis `DockerFiles/Nginx` hinterlegt.
@@ -306,9 +317,18 @@ Ich bin mit .NET und C# vertraut und habe keine Erfahrung mit Java/Kotlin. Es is
 ### Syslog Format
 
 Zur Zeit wird nur Syslog im Format [RFC 5424](https://datatracker.ietf.org/doc/html/rfc5424) unterstützt. Es gibt noch das ältere Format [RFC 3164](https://datatracker.ietf.org/doc/html/rfc3164). Dieses wird vom Syslog Parser nicht unterstützt.
+
+
 ### Auslesen der zusätzlichen Daten
 
 Die Anwendung unterstützt nur Key-Value-Daten (`key="value"`). Die Daten können aber auch im Format `[key Value]` oder als JSON vorliegen. Diese Daten werden zur Zeit ignoriert.
+
+### Automatisierte Tests
+
+Die Funktionalität des Parsers wurde direkt mit Live-Daten getestet. Es ist sinnvoller, den Parser mit automatisierten Tests zu testen. Bei Funktionserweiterungen und Optimierungen werden die bereits bekannten Fälle getestet und nicht nur die neuen.
+Aufgrund meiner mangelnden Erfahrung mit Java/Kotlin und aus Zeitgründen habe ich keine automatisierten Tests implementiert. In C# würde ich diese Tests mit xUnit implementieren.
+
+Bei einem automatischen Deployment über eine Pipeline können die Tests automatisch ausgeführt werden. Nur bei erfolgreicher Ausführung wird die neue Version veröffentlicht.
 
 ### Parsen optimieren
 
@@ -317,3 +337,11 @@ Die Syslog-Meldungen werden mit zwei Regex-Ausdrücken gelesen. Es ist zu prüfe
 ### Daten minimieren
 
 Die verarbeitete Syslog-Meldung enthält den ursprünglichen String. Nach dem Parsen könnte dieser ignoriert werden oder alternativ könnten nur die nicht verarbeiteten Teile des Strings gespeichert werden. Bei der derzeitigen Implementierung wird etwa doppelt so viel Speicher pro Nachricht benötigt. In diesem Beispiel wurde der String absichtlich gespeichert, um die Verarbeitung zu demonstrieren.
+
+# Abschließende Anmerkung
+
+Die Notwendigkeit der Sammlung von Syslog-Meldungen sollte unter dem Gesichtspunkt der Data Governance betrachtet werden. Es ist möglicherweise nicht erforderlich, dass jedes System, das Syslog unterstützt, Meldungen sendet.
+Es sollte auf Datensparsamkeit geachtet werden. Wenn Daten nicht verarbeitet oder benötigt werden, müssen sie auch nicht gespeichert werden. Nicht benötigte Daten verbrauchen Ressourcen, die für sinnvollere Zwecke verwendet werden können.
+
+Der Datenschutz ist ein weiterer Punkt, der beachtet werden muss. Wenn Syslog-Meldungen personenbezogene Daten enthalten, müssen diese besonders geschützt werden. In ElasticSearch kann der Personenkreis mit Zugriffsrechten auf diese Daten eingeschränkt werden.
+Bei einer automatisierten Verarbeitung von personenbezogenen Daten sollte ein Datenschutzbeauftragter hinzugezogen werden. Die betroffenen Personen müssen über den Zweck und den Umfang der Verarbeitung informiert werden.
