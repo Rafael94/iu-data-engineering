@@ -46,6 +46,8 @@ Eine Echtzeitverarbeitung der Syslog-Meldungen ermöglicht eine schnellere Reakt
 
 Außerdem vereinfacht eine Echtzeitverarbeitung die Problembehandlung und das Warten auf die nächste Batchverarbeitung entfällt. Für den Fall, dass eine Anwendung bestimmte Server nicht mehr erreichen kann, ist eine direkte Auswertung der Syslog-Meldungen möglich. Fortinet sendet blockierte Requests über Syslog.
 
+Falls Batch Processing gewünscht wird, kann dies ebenfalls mit dieser Infrastruktur realisiert werden. Apache Flink unterstützt Batchprocessing und Kafka kann für die Zwischenspeicherung verwendet werden. Es ist nur zu beachten, dass Apache Kafka Nachrichten lange bis zur nächsten Ausführung speichert.
+
 ## Syslog Faker
 
 Der Syslog Faker generiert zufällige Syslog-Meldungen im RFC 5424 Format. Vor jeder Meldung wird eine `Source IP` mit einem nachfolgenden `|` angegeben. In einer realen Anwendung entspricht die Source IP der IP-Adresse des Senders der Syslog-Meldung.
