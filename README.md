@@ -69,6 +69,8 @@ Der Syslog Faker wird mit [AOT](https://learn.microsoft.com/en-us/aspnet/core/fu
 
 Um AOT im Syslog Faker zu ermöglichen, wurde der Kafka-Client (C#) aus einem anderen [Branch](https://github.com/latop2604/confluent-kafka-dotnet/tree/feat/aot) heruntergeladen. Sobald der [Pull-Request](https://github.com/confluentinc/confluent-kafka-dotnet/issues/2146) akzeptiert ist, können die offiziellen NuGet-Pakete verwendet werden, um die neueste Version des Kafka-Clients einzubinden.
 
+Der Kafka Client steht unter der Lizenz `Apache-2.0 license`
+
 ## Apache Kafka
 
 Kafka fungiert als dedizierter Message-Broker, der Syslog-Meldungen empfängt, während Apache Flink diese Meldungen abruft, wodurch ein Nachrichtenpuffer entsteht. Selbst bei einem Ausfall des Apache Flink-Jobs gehen keine Meldungen verloren, da Kafka sie nur für eine begrenzte Zeit zwischenspeichert.
