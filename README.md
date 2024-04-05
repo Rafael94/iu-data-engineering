@@ -56,13 +56,14 @@ Eine Beispiel-Meldung könnte wie folgt aussehen: `192.168.2.150|<52>1 2024-04-0
 
 Im produktiven Einsatz würden die Meldungen über UDP oder TCP empfangen und dann an Kafka weitergeleitet. Durch einen vorgeschalteten Load-Balancer könnte die Skalierbarkeit des Syslog-Empfängers verbessert und die Ausfallsicherheit erhöht werden, falls ein Syslog-Empfänger ausfällt.
 
-In der `appsettings.json`, die nach Ausführung des PowerShell-Skripts `init.ps1` im Verzeichnis `Dockerhttps://github.com/Rafael94/iu-data-engineering/blob/main/Images/SyslogFaker` erstellt wird, kann die Wartezeit (`WaitingTimeBetweenMessages`) zwischen zwei Meldungen geändert werden. Standardmäßig wird eine Wartezeit von 10 Millisekunden eingestellt.
+In der `appsettings.json`, die nach Ausführung des PowerShell-Skripts `init.ps1` im Verzeichnis `DockerFiles/SyslogFaker` erstellt wird, kann die Wartezeit (`WaitingTimeBetweenMessages`) zwischen zwei Meldungen geändert werden. Standardmäßig wird eine Wartezeit von 10 Millisekunden eingestellt. Des Weiteren können in dieser Datei die Kafka Server, das Topic und die Client Id angegeben werden.
 
 Der Quellcode befindet sich im Verzeichnis `Projects/SyslogFaker` und kann mit Visual Studio geöffnet werden. Zur Ausführung des Programms wird das [.NET 8 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/8.0) benötigt. Eine manuelle Kompilierung des Projekts ist erforderlich, sodass die genannten Abhängigkeiten nicht installiert werden müssen. Das Programm wird in einem Docker-Container kompiliert und als Image im lokalen Repository gespeichert.
 
 Alternativ könnte das fertige Image direkt in Docker Hub hochgeladen werden, um die manuelle Kompilierung zu umgehen. Zum Testen ist jedoch ein lokales Image ausreichend, und es ist kein Docker-Hub-Konto zum Hochladen des Images erforderlich.
 
 Der Syslog Faker wird mit [AOT](https://learn.microsoft.com/en-us/aspnet/core/fundamentals/native-aot?view=aspnetcore-8.0) kompiliert, um eine verbesserte Startzeit und eine kleinere Anwendung zu erreichen.
+
 
 ### Kafka Client (C#)
 
@@ -244,6 +245,14 @@ Vor der Ausführung müssen einige Parameter angegeben werden.
 ### Parameters
 
 Durch die Parametrisierung entfällt die Notwendigkeit, feste Konfigurationen im Quellcode zu hinterlegen und bei Änderungen neu zu kompilieren. Außerdem erleichtert es die Ausführung des Programms in der Entwicklungsumgebung und in Apache Flink, da keine Änderungen am Quellcode erforderlich sind.
+
+```
+--kafka-bootstrap-servers {hostname}:{Port} => Mehrere Kafka Server mit Komma trennen
+--elasticsearch {http|https}:{hostname}:{port} => Mehrere Slasticsearch Server mit Komma trennen
+--elasticsearch-user {User}=> Benutzer für ElasticSearch
+--elasticsearch-password {Password} => Passwort für ElasticSearch
+--index {IndexName} => (Optional) Index-Name für das Speichern der Syslog-Meldungen in ElasticSearch. Standardmäßig `syslog`. Darf nur aus kleichnbuchstaben, Zahlen und aus den Zeichen `-`, `_` bestehen
+```
 
 #### Apache Flink
 
