@@ -83,7 +83,7 @@ Apache Flink wird verwendet, um den Syslog-Parser auszuführen. Der Quellcode f�
 
 Da Apache Flink keine integrierte Authentifizierung unterstützt, wird Nginx als Reverse-Proxy eingesetzt.
 
-Der Syslog-Parser-Job speichert die verarbeiteten Daten in Elasticsearch. Nach der Verarbeitung sieht die oben gezeigte Meldung wie folgt aus:
+Der Syslog-Parser-Job speichert die verarbeiteten Daten in Elasticsearch. Nach der Verarbeitung sieht die oben gezeigte Meldung in ElasticSearch wie folgt aus:
 
 ```
 {
